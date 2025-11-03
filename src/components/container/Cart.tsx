@@ -1,7 +1,7 @@
 'use client';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
-import { increase, decrease, removeItem } from '@/redux/cartSlice';
+import { increase, decrease, removeItem } from '@/features/cart/cartSlice';
 import Link from 'next/link';
 export default function Cart() {
   const cart = useSelector((state: RootState) => state.cart.items);

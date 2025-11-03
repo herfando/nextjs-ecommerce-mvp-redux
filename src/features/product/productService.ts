@@ -1,3 +1,4 @@
+// productService.ts
 import { ApiProduct, Product } from './productTypes';
 
 export const getProducts = async (): Promise<Product[]> => {
