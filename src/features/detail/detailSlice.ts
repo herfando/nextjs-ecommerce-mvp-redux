@@ -1,38 +1,24 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// detailSlice.ts
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { DetailProduct, DetailState } from './detailTypes';
+import { fetchDetailProduct } from './detailService';
 
-export interface DetailProduct {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  thumbnail: string;
-  images: string[];
-  category: string;
-  rating: number;
-}
+// Async thunk
+export const fetchProductDetail = createAsyncThunk(
+  'detail/fetchProductDetail',
+  async (id: number) => {
+    return await fetchDetailProduct(id);
+  }
+);
 
-interface DetailState {
-  item: DetailProduct | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
+// Initial state
 const initialState: DetailState = {
   item: null,
   isLoading: false,
   error: null,
 };
 
-// 🟢 Optional: fetch detail dari API kalau user buka langsung lewat URL
-export const fetchProductDetail = createAsyncThunk(
-  'detail/fetchProductDetail',
-  async (id: number) => {
-    const res = await fetch(`https://dummyjson.com/products/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch detail');
-    return (await res.json()) as DetailProduct;
-  }
-);
-
+// Slice
 const detailSlice = createSlice({
   name: 'detail',
   initialState,
@@ -42,8 +28,7 @@ const detailSlice = createSlice({
       state.error = null;
       state.isLoading = false;
     },
-    // 🟢 Tambahin ini biar bisa dispatch(setDetail(product))
-    setDetail: (state, action) => {
+    setDetail: (state, action: PayloadAction<DetailProduct>) => {
       state.item = action.payload;
     },
   },
@@ -64,5 +49,5 @@ const detailSlice = createSlice({
   },
 });
 
-export const { clearDetail, setDetail } = detailSlice.actions; // ✅ ini penting
+export const { clearDetail, setDetail } = detailSlice.actions;
 export default detailSlice.reducer;

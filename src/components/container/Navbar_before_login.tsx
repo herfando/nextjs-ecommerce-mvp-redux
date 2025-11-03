@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/app/store';
 import { setQuery } from '@/features/search/searchSlice';
 import { useEffect } from 'react';
-import { fetchCartFromAPI } from '@/redux/cartSlice';
+import { fetchCartFromAPI } from '@/features/cart/cartSlice';
 
 export default function NavbarBeforeLogin() {
   const router = useRouter();

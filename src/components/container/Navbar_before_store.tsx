@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/app/store';
 import { setQuery, fetchSearchResults } from '@/features/search/searchSlice';
 import { useEffect } from 'react';
-import { fetchCartFromAPI } from '@/redux/cartSlice';
+import { fetchCartFromAPI } from '@/features/cart/cartSlice';
 
 // 🔹 Bagian Auth Section
 const NavAuthSection = () => {

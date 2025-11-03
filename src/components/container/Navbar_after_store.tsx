@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/app/store';
 import { setQuery, fetchSearchResults } from '@/features/search/searchSlice';
-import { fetchCartFromAPI } from '@/redux/cartSlice';
+import { fetchCartFromAPI } from '@/features/cart/cartSlice';
 import { useEffect } from 'react';
 
 // 🔹 Auth section

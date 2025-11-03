@@ -1,42 +1,25 @@
+// searchSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import type { SearchState } from './searchTypes';
+import { fetchSearchResultsAPI } from './searchService';
 import type { RootState } from '@/app/store';
-import type { Product } from '@/features/product/productSlice';
 
+// Async thunk
 export const fetchSearchResults = createAsyncThunk(
   'search/fetchResults',
   async (query: string) => {
-    const url = query.trim()
-      ? `https://dummyjson.com/products/search?q=${query}`
-      : 'https://dummyjson.com/products';
-    const res = await fetch(url);
-    const data = await res.json();
-
-    return data.products.map((p: any) => ({
-      id: p.id,
-      img: p.thumbnail,
-      title: p.title,
-      price: `$${p.price.toFixed(2)}`,
-      rating: p.rating.toFixed(1),
-      sold: `${p.stock} sold`,
-      store: 'Global Market',
-      category: p.category,
-      description: p.description,
-    })) as Product[];
+    return await fetchSearchResultsAPI(query);
   }
 );
 
-interface SearchState {
-  query: string;
-  results: Product[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-}
-
+// Initial state
 const initialState: SearchState = {
   query: '',
   results: [],
   status: 'idle',
 };
 
+// Slice
 const searchSlice = createSlice({
   name: 'search',
   initialState,
