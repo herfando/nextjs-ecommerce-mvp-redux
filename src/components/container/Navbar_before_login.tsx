@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/redux/store';
-import { setQuery } from '@/redux/searchSlice';
+import { RootState, AppDispatch } from '@/app/store';
+import { setQuery } from '@/features/search/searchSlice';
 import { useEffect } from 'react';
 import { fetchCartFromAPI } from '@/redux/cartSlice';
 
@@ -38,69 +38,78 @@ export default function NavbarBeforeLogin() {
   const handleCategory = () => console.log('Go to Category Page');
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
-        
+    <nav className='sticky top-0 z-50 border-gray-100 bg-white shadow-md'>
+      <div className='mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
         {/* Logo */}
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/companyicon.png" alt="Shirt Logo" width={32} height={32} />
-            <span className="text-xl font-bold">Shirt</span>
+        <div className='flex items-center'>
+          <Link href='/' className='flex items-center gap-2'>
+            <Image
+              src='/companyicon.png'
+              alt='Shirt Logo'
+              width={32}
+              height={32}
+            />
+            <span className='text-xl font-bold'>Shirt</span>
           </Link>
         </div>
 
         {/* Catalog & Search */}
-        <div className="flex items-center gap-4 flex-grow max-w-xl mx-8">
-          
+        <div className='mx-8 flex max-w-xl flex-grow items-center gap-4'>
           {/* Catalog Button */}
-          <Link href="/07_store" passHref>
-            <Button 
-              variant="outline"
-              className="cursor-pointer h-10 px-4 flex items-center gap-1.5 text-sm font-medium border-gray-300 hover:bg-gray-50 transition-colors"
+          <Link href='/07_store' passHref>
+            <Button
+              variant='outline'
+              className='flex h-10 cursor-pointer items-center gap-1.5 border-gray-300 px-4 text-sm font-medium transition-colors hover:bg-gray-50'
               onClick={handleCategory}
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className='h-4 w-4' />
               <span>Category</span>
             </Button>
           </Link>
 
           {/* 🔥 Search Form Redux */}
-          <form onSubmit={handleSearchSubmit} className="relative flex-grow h-10">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input 
-              type="text"
-              name="search_query"
-              placeholder="Search product..."
+          <form
+            onSubmit={handleSearchSubmit}
+            className='relative h-10 flex-grow'
+          >
+            <Search className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400' />
+            <Input
+              type='text'
+              name='search_query'
+              placeholder='Search product...'
               value={query}
               onChange={handleSearchChange}
-              className="w-full h-10 pl-10 pr-4 rounded-xl border border-gray-300 focus-visible:ring-black focus-visible:ring-offset-0 transition-shadow"
+              className='h-10 w-full rounded-xl border border-gray-300 pr-4 pl-10 transition-shadow focus-visible:ring-black focus-visible:ring-offset-0'
             />
           </form>
         </div>
 
         {/* Cart & Auth Buttons */}
-        <div className="flex items-center gap-4">
-          <Link href="/09_cart" className="relative transition-all duration-300 hover:scale-105">
-            <ShoppingCart className="cursor-pointer hover:fill-black w-6 h-6 text-gray-700" />
+        <div className='flex items-center gap-4'>
+          <Link
+            href='/09_cart'
+            className='relative transition-all duration-300 hover:scale-105'
+          >
+            <ShoppingCart className='h-6 w-6 cursor-pointer text-gray-700 hover:fill-black' />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+              <span className='absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white'>
                 {cartCount}
               </span>
             )}
           </Link>
 
-          <Button 
-            variant="outline"
+          <Button
+            variant='outline'
             onClick={handleLogin}
-            className="cursor-pointer text-sm px-5 py-2 h-10 font-semibold border-gray-300 hover:bg-black hover:text-white transition-colors"
+            className='h-10 cursor-pointer border-gray-300 px-5 py-2 text-sm font-semibold transition-colors hover:bg-black hover:text-white'
           >
             Login
           </Button>
 
-          <Button 
-            variant="outline"
+          <Button
+            variant='outline'
             onClick={handleRegister}
-            className="cursor-pointer text-sm px-5 py-2 h-10 font-semibold border-gray-300 hover:bg-black hover:text-white transition-colors"
+            className='h-10 cursor-pointer border-gray-300 px-5 py-2 text-sm font-semibold transition-colors hover:bg-black hover:text-white'
           >
             Register
           </Button>
