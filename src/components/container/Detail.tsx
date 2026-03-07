@@ -35,6 +35,8 @@ export default function Detail() {
     'description'
   );
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   // ----------------------------
   // Fetch detail product
   // ----------------------------
@@ -50,9 +52,7 @@ export default function Detail() {
   useEffect(() => {
     if (item && item.category) {
       fetch(
-        `https://dummyjson.com/products/category/${encodeURIComponent(
-          item.category
-        )}`
+        `${API_BASE}/products/category/${encodeURIComponent(item.category)}`
       )
         .then((res) => res.json() as Promise<ProductsResponse>)
         .then((json) => {
@@ -63,7 +63,7 @@ export default function Detail() {
           console.error('Failed to fetch related products:', err)
         );
     }
-  }, [item]);
+  }, [item, API_BASE]);
 
   if (isLoading)
     return (

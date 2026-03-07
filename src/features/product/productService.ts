@@ -1,8 +1,15 @@
 // productService.ts
 import { ApiProduct, Product } from './productTypes';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const getProducts = async (): Promise<Product[]> => {
-  const res = await fetch('https://dummyjson.com/products?limit=0');
+  const res = await fetch(`${API_BASE}/products`);
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch products');
+  }
+
   const data = await res.json();
 
   return data.products.map((p: ApiProduct) => ({

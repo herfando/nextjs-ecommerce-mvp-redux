@@ -1,8 +1,15 @@
 // cartService.ts
-import { CartItem, CartState } from './cartTypes';
+import { CartItem } from './cartTypes';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const fetchCartItems = async (): Promise<CartItem[]> => {
-  const res = await fetch('https://dummyjson.com/products?limit=5');
+  const res = await fetch(`${API_BASE}/products?limit=5`);
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch cart products');
+  }
+
   const data = await res.json();
 
   return data.products.map((p: any) => ({

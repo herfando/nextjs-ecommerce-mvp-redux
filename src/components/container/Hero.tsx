@@ -34,9 +34,11 @@ const highlightTextMap: Record<string, string> = {
   'womens-watches': 'Chic Accessories',
 };
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 // -------------------- Fetch function --------------------
 const fetchAllProducts = async (): Promise<ApiProduct[]> => {
-  const res = await fetch('https://dummyjson.com/products?limit=0');
+  const res = await fetch(`${API_BASE}/products`);
   if (!res.ok) throw new Error('Failed to fetch products');
   const data = await res.json();
   return data.products;
@@ -47,9 +49,9 @@ export default function Hero() {
   const router = useRouter();
 
   const { data: products = [], isLoading } = useQuery({
-    queryKey: ['dummyProducts'],
+    queryKey: ['products'],
     queryFn: fetchAllProducts,
-    staleTime: 1000 * 60 * 60, // 1 hour
+    staleTime: 1000 * 60 * 60,
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,9 +59,11 @@ export default function Hero() {
   // Ganti produk tiap 3 detik
   useEffect(() => {
     if (products.length === 0) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % products.length);
     }, 3000);
+
     return () => clearInterval(interval);
   }, [products]);
 
@@ -74,12 +78,13 @@ export default function Hero() {
   }
 
   const currentProduct = products[currentIndex];
+
   const highlight =
     highlightTextMap[currentProduct.category] ?? 'New Collection';
 
   const handleGetNow = () => {
-    dispatch(setDetail(currentProduct)); // Simpan ke redux
-    router.push(`/06_detail?id=${currentProduct.id}`); // Pindah ke halaman detail
+    dispatch(setDetail(currentProduct));
+    router.push(`/06_detail?id=${currentProduct.id}`);
   };
 
   return (
@@ -93,9 +98,11 @@ export default function Hero() {
           <span className='py-3 text-3xl font-bold text-[#553E32] transition-all md:text-5xl'>
             {highlight}
           </span>
+
           <span className='text-base font-semibold text-[#553E32] transition-all md:text-2xl'>
             {currentProduct.title}
           </span>
+
           <span className='line-clamp-3 text-sm text-[#553E32]/80 transition-all md:text-lg'>
             {currentProduct.description}
           </span>
@@ -108,7 +115,7 @@ export default function Hero() {
           </Button>
         </article>
 
-        {/* Gambar */}
+        {/* Image */}
         <div
           key={currentProduct.thumbnail}
           className='relative mx-auto flex aspect-[4/5] h-[185px] w-full items-end justify-center overflow-hidden md:order-1 md:h-[367px] md:max-w-none'
