@@ -46,7 +46,7 @@ export default function Catalog() {
     .filter(
       (p) =>
         selectedCategories.length === 0 ||
-        selectedCategories.includes(p.category)
+        (p.category && selectedCategories.includes(p.category))
     )
     .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 
@@ -75,12 +75,13 @@ export default function Catalog() {
                       type='checkbox'
                       className='h-5 w-5 rounded accent-black'
                       checked={
-                        selectedCategories.includes(cat) ||
+                        (cat && selectedCategories.includes(cat)) ||
                         (cat === 'All' && selectedCategories.length === 0)
                       }
-                      onChange={(e) =>
-                        handleCategoryChange(cat, e.target.checked)
-                      }
+                      onChange={(e) => {
+                        if (!cat) return;
+                        handleCategoryChange(cat, e.target.checked);
+                      }}
                     />
                     {cat}
                   </label>
@@ -96,7 +97,6 @@ export default function Catalog() {
               <article
                 key={product.id}
                 onClick={() => {
-                  dispatch(setDetail(product));
                   router.push(`/06_detail?id=${product.id}`);
                 }}
                 className='cursor-pointer rounded-xl bg-white shadow-sm transition hover:shadow-md'

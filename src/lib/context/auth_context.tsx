@@ -1,14 +1,21 @@
 'use client';
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from 'react';
 
 type User = {
   id?: number;
+  username?: string;
   name?: string;
   email: string;
   token: string;
   hasStore?: boolean; // ✅ tambahkan tanda tanya supaya opsional
-  store?: any;        // ✅ juga opsional
-  avatar?: string; // 
+  store?: any; // ✅ juga opsional
+  avatar?: string; //
 };
 
 type AuthContextType = {
@@ -31,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         setUser(JSON.parse(savedUser));
       } catch (error) {
-        console.error("Failed to parse user from localStorage:", error);
+        console.error('Failed to parse user from localStorage:', error);
         localStorage.removeItem('user');
       }
     }
@@ -57,6 +64,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 };

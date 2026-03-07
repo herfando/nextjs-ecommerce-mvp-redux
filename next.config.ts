@@ -1,24 +1,20 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+
+const IMAGE_HOST = process.env.NEXT_PUBLIC_IMAGE_HOST;
 
 const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "i.dummyjson.com", // kadang digunakan untuk thumbnail
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.dummyjson.com", // gambar produk utama
-      },
-      {
-        protocol: "https",
-        hostname: "fakestoreapi.com", // jaga-jaga kalau masih pakai sumber lama
-      },
-    ],
+    remotePatterns: IMAGE_HOST
+      ? [
+          {
+            protocol: 'http', // atau https kalau backend pakai SSL
+            hostname: IMAGE_HOST,
+          },
+        ]
+      : [],
   },
 };
 

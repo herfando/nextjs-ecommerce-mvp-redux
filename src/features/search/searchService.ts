@@ -1,15 +1,20 @@
 // searchService.ts
 import type { SearchItem } from './searchTypes';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const fetchSearchResultsAPI = async (
   query: string
 ): Promise<SearchItem[]> => {
   const url = query.trim()
-    ? `https://dummyjson.com/products/search?q=${query}`
-    : 'https://dummyjson.com/products';
+    ? `${API_BASE}/products/search?q=${query}`
+    : `${API_BASE}/products`;
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch search results');
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch search results');
+  }
 
   const data = await res.json();
 
