@@ -47,6 +47,7 @@ const NavAuthSection = () => {
             {user?.storeName || 'Your Store'}
           </span>
         </Button>
+
         <Button
           variant='ghost'
           className='h-auto p-0'

@@ -9,6 +9,7 @@ const Checkout = () => {
   const cart = useSelector((state: RootState) => state.cart.items);
   const [paymentMethod, setPaymentMethod] = useState('bni1');
   const [shippingCost, setShippingCost] = useState(10); // USD
+
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -78,16 +79,14 @@ const Checkout = () => {
                 >
                   <div className='flex items-center gap-4'>
                     <Image
-                      src={item.thumbnail || item.image || '/product1.png'}
+                      src={item.image || '/product1.png'}
                       width={80}
                       height={80}
-                      alt={item.title || item.name}
+                      alt={item.name}
                       className='rounded-md'
                     />
                     <div>
-                      <h3 className='font-semibold'>
-                        {item.title || item.name}
-                      </h3>
+                      <h3 className='font-semibold'>{item.name}</h3>
                       <p className='text-sm text-gray-500'>{item.category}</p>
                       <p className='text-sm text-gray-500'>
                         Qty: {item.quantity}
