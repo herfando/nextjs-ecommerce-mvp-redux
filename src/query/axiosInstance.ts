@@ -1,14 +1,15 @@
+// query/axiosInstance.ts
 import axios, {
   AxiosInstance,
   AxiosError,
   InternalAxiosRequestConfig,
 } from 'axios';
 
-const rawBase =
-  process.env.NEXT_PUBLIC_API_URL ||
-  'https://e-commerce-api-production-26ab.up.railway.app/';
-const baseURL = rawBase.replace(/\/+$/, '');
+// ===== Base URL dari env =====
+const rawBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+const baseURL = rawBase.replace(/\/+$/, ''); // hapus trailing slash
 
+// ===== Axios Instance =====
 export const axiosInstance: AxiosInstance = axios.create({
   baseURL,
   headers: {
@@ -19,6 +20,7 @@ export const axiosInstance: AxiosInstance = axios.create({
   withCredentials: false,
 });
 
+// ===== Request Interceptor =====
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (typeof window !== 'undefined') {
@@ -33,11 +35,12 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// ===== Response Interceptor =====
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // contoh: refresh token di sini
+      // TODO: bisa implement refresh token di sini
     }
     return Promise.reject(error);
   }
