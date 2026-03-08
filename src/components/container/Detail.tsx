@@ -9,7 +9,7 @@ import { addToCart } from '@/features/cart/cartSlice';
 import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Product } from '@/types';
+import type { Product } from '@/query/types';
 import { DetailProduct } from '@/features/detail/detailTypes';
 
 // ----------------------------

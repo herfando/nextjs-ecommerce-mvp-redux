@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useOpenStore } from '@/hooks/useOpenStore';
+import { useOpenStore } from '@/query/hooks/useOpenStore';
 
 export default function OpenStore() {
   // ✅ Ambil semua yang dibutuhkan dari hook

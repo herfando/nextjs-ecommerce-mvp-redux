@@ -1,8 +1,14 @@
 'use client';
 
-import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
-import { useProducts } from '@/hooks/useProducts';
-import type { Product } from '@/hooks/useProducts';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  ReactNode,
+} from 'react';
+import { useProducts } from '@/query/hooks/useProducts';
+import type { Product } from '@/query/hooks/useProducts';
 
 interface SearchContextType {
   query: string;
@@ -25,7 +31,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   }, [query, allProducts]);
 
   return (
-    <SearchContext.Provider value={{ query, setQuery, filteredProducts, isLoading }}>
+    <SearchContext.Provider
+      value={{ query, setQuery, filteredProducts, isLoading }}
+    >
       {children}
     </SearchContext.Provider>
   );
