@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import { Product } from "../../types";
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { Product } from '../../query/types';
 
 type BuyerContextType = {
   cart: Product[];
@@ -27,6 +27,6 @@ export function BuyerProvider({ children }: { children: ReactNode }) {
 
 export const useBuyer = () => {
   const context = useContext(BuyerContext);
-  if (!context) throw new Error("useBuyer must be used within BuyerProvider");
+  if (!context) throw new Error('useBuyer must be used within BuyerProvider');
   return context;
 };

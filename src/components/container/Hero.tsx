@@ -7,15 +7,36 @@ import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { AppDispatch } from '@/app/store';
 import { setDetail } from '@/features/detail/detailSlice';
+import { DetailProduct } from '@/features/detail/detailTypes';
 
 // -------------------- Type Produk --------------------
+interface Image {
+  thumbnail: string;
+}
+
 interface ApiProduct {
+  _id: string;
   id: number;
   title: string;
   description: string;
-  thumbnail: string;
   category: string;
+  price: number;
+  discountPercentage: number;
   rating: number;
+  stock: number;
+  tags: string[];
+  brand: string;
+  sku: string;
+  weight: number;
+  dimensions: Record<string, any>;
+  warrantyInformation: string;
+  shippingInformation: string;
+  availabilityStatus: string;
+  reviews: any[];
+  returnPolicy: string;
+  minimumOrderQuantity: number;
+  meta: Record<string, any>;
+  images: Image[];
 }
 
 // Mapping teks highlight per kategori
@@ -38,10 +59,9 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // -------------------- Fetch function --------------------
 const fetchAllProducts = async (): Promise<ApiProduct[]> => {
-  const res = await fetch(`${API_BASE}/products`);
+  const res = await fetch(`${API_BASE}/api/products`);
   if (!res.ok) throw new Error('Failed to fetch products');
-  const data = await res.json();
-  return data.products;
+  return res.json();
 };
 
 export default function Hero() {
@@ -80,10 +100,22 @@ export default function Hero() {
   const currentProduct = products[currentIndex];
 
   const highlight =
-    highlightTextMap[currentProduct.category] ?? 'New Collection';
+    highlightTextMap[currentProduct.category?.name] ?? 'New Collection';
 
   const handleGetNow = () => {
-    dispatch(setDetail(currentProduct));
+    const detailProduct: DetailProduct = {
+      id: currentProduct.id,
+      name: currentProduct.title,
+      description: currentProduct.description,
+      category: currentProduct.category,
+      price: currentProduct.price,
+      thumbnail: currentProduct.images[0]?.thumbnail,
+      images: currentProduct.images?.map((img) => img.thumbnail),
+      brand: currentProduct.brand,
+      stock: currentProduct.stock,
+    };
+
+    dispatch(setDetail(detailProduct));
     router.push(`/06_detail?id=${currentProduct.id}`);
   };
 
@@ -92,7 +124,7 @@ export default function Hero() {
       <div className='mx-auto grid w-full max-w-7xl grid-cols-1 items-center justify-center overflow-hidden rounded-2xl bg-[#F3D7A4] p-5 shadow-xl md:grid-cols-2 md:gap-20 md:p-10'>
         {/* Text */}
         <article
-          key={currentProduct.id}
+          key={currentProduct._id}
           className='flex flex-col items-center justify-center gap-4 py-4 text-center md:order-2 md:-translate-x-20 md:items-start md:py-0 md:text-left'
         >
           <span className='py-3 text-3xl font-bold text-[#553E32] transition-all md:text-5xl'>
@@ -100,7 +132,7 @@ export default function Hero() {
           </span>
 
           <span className='text-base font-semibold text-[#553E32] transition-all md:text-2xl'>
-            {currentProduct.title}
+            {currentProduct.name}
           </span>
 
           <span className='line-clamp-3 text-sm text-[#553E32]/80 transition-all md:text-lg'>
@@ -117,12 +149,12 @@ export default function Hero() {
 
         {/* Image */}
         <div
-          key={currentProduct.thumbnail}
+          key={currentProduct.image}
           className='relative mx-auto flex aspect-[4/5] h-[185px] w-full items-end justify-center overflow-hidden md:order-1 md:h-[367px] md:max-w-none'
         >
           <Image
-            src={currentProduct.thumbnail}
-            alt={currentProduct.title}
+            src={currentProduct.image}
+            alt={currentProduct.name}
             fill
             style={{ objectFit: 'contain' }}
             sizes='w-full'
