@@ -20,9 +20,11 @@ export default function Hero() {
   // Carousel otomatis tiap 3 detik
   useEffect(() => {
     if (!products.length) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % products.length);
     }, 3000);
+
     return () => clearInterval(interval);
   }, [products]);
 
@@ -37,17 +39,21 @@ export default function Hero() {
   }
 
   const currentProduct: Product = products[currentIndex];
+
   const highlight =
-    highlightTextMap[currentProduct.category?.name] ?? 'New Collection';
+    highlightTextMap[currentProduct.category] ?? 'New Collection';
+
+  // ambil thumbnail aman
+  const thumbnail = currentProduct.images?.[0]?.thumbnail;
 
   const handleGetNow = () => {
     const detailProduct: DetailProduct = {
       id: currentProduct.id,
       name: currentProduct.title,
       description: currentProduct.description,
-      category: currentProduct.category?.name,
+      category: currentProduct.category,
       price: currentProduct.price,
-      thumbnail: currentProduct.images?.[0]?.thumbnail,
+      thumbnail: thumbnail,
       images: currentProduct.images?.map((img) => img.thumbnail),
       brand: currentProduct.brand,
       stock: currentProduct.stock,
@@ -86,19 +92,18 @@ export default function Hero() {
         </article>
 
         {/* Image */}
-        <div
-          key={currentProduct.images?.[0]?.thumbnail || currentProduct._id}
-          className='relative mx-auto flex aspect-[4/5] h-[185px] w-full items-end justify-center overflow-hidden md:order-1 md:h-[367px] md:max-w-none'
-        >
-          <Image
-            src={currentProduct.images?.[0]?.thumbnail || '/placeholder.png'}
-            alt={currentProduct.title}
-            fill
-            style={{ objectFit: 'contain' }}
-            sizes='w-full'
-            className='transition-all duration-500 ease-in-out md:-translate-x-20'
-            priority
-          />
+        <div className='relative mx-auto flex aspect-[4/5] h-[185px] w-full items-end justify-center overflow-hidden md:order-1 md:h-[367px] md:max-w-none'>
+          {thumbnail && (
+            <Image
+              src={thumbnail}
+              alt={currentProduct.title}
+              fill
+              style={{ objectFit: 'contain' }}
+              sizes='100vw'
+              className='transition-all duration-500 ease-in-out md:-translate-x-20'
+              priority
+            />
+          )}
         </div>
       </div>
     </section>
