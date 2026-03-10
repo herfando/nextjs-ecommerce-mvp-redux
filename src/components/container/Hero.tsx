@@ -17,7 +17,7 @@ export default function Hero() {
   const { data: products = [], isLoading } = useProduct();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Carousel otomatis setiap 3 detik
+  // Carousel otomatis tiap 3 detik
   useEffect(() => {
     if (!products.length) return;
     const interval = setInterval(() => {
@@ -45,9 +45,9 @@ export default function Hero() {
       id: currentProduct.id,
       name: currentProduct.title,
       description: currentProduct.description,
-      category: currentProduct.category,
+      category: currentProduct.category?.name,
       price: currentProduct.price,
-      thumbnail: currentProduct.images[0]?.thumbnail,
+      thumbnail: currentProduct.images?.[0]?.thumbnail,
       images: currentProduct.images?.map((img) => img.thumbnail),
       brand: currentProduct.brand,
       stock: currentProduct.stock,
@@ -87,11 +87,11 @@ export default function Hero() {
 
         {/* Image */}
         <div
-          key={currentProduct.images[0]?.thumbnail}
+          key={currentProduct.images?.[0]?.thumbnail || currentProduct._id}
           className='relative mx-auto flex aspect-[4/5] h-[185px] w-full items-end justify-center overflow-hidden md:order-1 md:h-[367px] md:max-w-none'
         >
           <Image
-            src={currentProduct.images[0]?.thumbnail || ''}
+            src={currentProduct.images?.[0]?.thumbnail || '/placeholder.png'}
             alt={currentProduct.title}
             fill
             style={{ objectFit: 'contain' }}
