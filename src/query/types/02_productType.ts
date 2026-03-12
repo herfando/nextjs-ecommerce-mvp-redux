@@ -1,9 +1,5 @@
 // types/product.ts
 
-export interface Image {
-  thumbnail: string;
-}
-
 export interface Dimensions {
   width: number;
   height: number;
@@ -58,7 +54,8 @@ export interface Product {
 
   meta: Meta;
 
-  images: Image[];
+  // fix: images sekarang array string sesuai Mongo Atlas
+  images: string[];
 }
 
 // mapping highlight hero

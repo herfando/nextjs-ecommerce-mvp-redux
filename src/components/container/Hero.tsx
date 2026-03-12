@@ -43,8 +43,8 @@ export default function Hero() {
   const highlight =
     highlightTextMap[currentProduct.category] ?? 'New Collection';
 
-  // ambil thumbnail aman
-  const thumbnail = currentProduct.images?.[0]?.thumbnail;
+  // ambil thumbnail langsung dari images array
+  const thumbnail = currentProduct.images?.[0];
 
   const handleGetNow = () => {
     const detailProduct: DetailProduct = {
@@ -54,7 +54,7 @@ export default function Hero() {
       category: currentProduct.category,
       price: currentProduct.price,
       thumbnail: thumbnail,
-      images: currentProduct.images?.map((img) => img.thumbnail),
+      images: currentProduct.images, // array string sesuai Mongo Atlas
       brand: currentProduct.brand,
       stock: currentProduct.stock,
     };
