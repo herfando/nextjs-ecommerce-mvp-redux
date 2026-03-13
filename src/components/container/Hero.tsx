@@ -2,83 +2,24 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { AppDispatch } from '@/app/store';
 import { setDetail } from '@/features/detail/detailSlice';
 import { DetailProduct } from '@/features/detail/detailTypes';
 
-// -------------------- Type Produk --------------------
-interface Image {
-  thumbnail: string;
-}
-
-interface ApiProduct {
-  _id: string;
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  price: number;
-  discountPercentage: number;
-  rating: number;
-  stock: number;
-  tags: string[];
-  brand: string;
-  sku: string;
-  weight: number;
-  dimensions: Record<string, any>;
-  warrantyInformation: string;
-  shippingInformation: string;
-  availabilityStatus: string;
-  reviews: any[];
-  returnPolicy: string;
-  minimumOrderQuantity: number;
-  meta: Record<string, any>;
-  images: Image[];
-}
-
-// Mapping teks highlight per kategori
-const highlightTextMap: Record<string, string> = {
-  smartphones: 'Top Gadget This Week',
-  laptops: 'Powerful Devices for You',
-  fragrances: 'Feel Fresh Everyday',
-  skincare: 'Self-Care Essentials',
-  groceries: 'Fresh Deals Today',
-  'home-decoration': 'Decorate Your Space',
-  'mens-shirts': "Stylish Men's Apparel",
-  'mens-shoes': 'Step Up Your Style',
-  'mens-watches': 'Luxury in Time',
-  'womens-dresses': 'Elegant Women’s Wear',
-  'womens-shoes': 'Perfect Steps for Her',
-  'womens-watches': 'Chic Accessories',
-};
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-// -------------------- Fetch function --------------------
-const fetchAllProducts = async (): Promise<ApiProduct[]> => {
-  const res = await fetch(`${API_BASE}/api/products`);
-  if (!res.ok) throw new Error('Failed to fetch products');
-  return res.json();
-};
+import { useProduct } from '@/query/hooks/02_useProduct';
+import { highlightTextMap, Product } from '@/query/types/02_productType';
 
 export default function Hero() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchAllProducts,
-    staleTime: 1000 * 60 * 60,
-  });
-
+  const { data: products = [], isLoading } = useProduct();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Ganti produk tiap 3 detik
+  // Carousel otomatis tiap 3 detik
   useEffect(() => {
-    if (products.length === 0) return;
+    if (!products.length) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % products.length);
@@ -97,10 +38,13 @@ export default function Hero() {
     );
   }
 
-  const currentProduct = products[currentIndex];
+  const currentProduct: Product = products[currentIndex];
 
   const highlight =
-    highlightTextMap[currentProduct.category?.name] ?? 'New Collection';
+    highlightTextMap[currentProduct.category] ?? 'New Collection';
+
+  // ambil thumbnail langsung dari images array
+  const thumbnail = currentProduct.images?.[0];
 
   const handleGetNow = () => {
     const detailProduct: DetailProduct = {
@@ -109,8 +53,8 @@ export default function Hero() {
       description: currentProduct.description,
       category: currentProduct.category,
       price: currentProduct.price,
-      thumbnail: currentProduct.images[0]?.thumbnail,
-      images: currentProduct.images?.map((img) => img.thumbnail),
+      thumbnail: thumbnail,
+      images: currentProduct.images, // array string sesuai Mongo Atlas
       brand: currentProduct.brand,
       stock: currentProduct.stock,
     };
@@ -132,7 +76,7 @@ export default function Hero() {
           </span>
 
           <span className='text-base font-semibold text-[#553E32] transition-all md:text-2xl'>
-            {currentProduct.name}
+            {currentProduct.title}
           </span>
 
           <span className='line-clamp-3 text-sm text-[#553E32]/80 transition-all md:text-lg'>
@@ -148,19 +92,18 @@ export default function Hero() {
         </article>
 
         {/* Image */}
-        <div
-          key={currentProduct.image}
-          className='relative mx-auto flex aspect-[4/5] h-[185px] w-full items-end justify-center overflow-hidden md:order-1 md:h-[367px] md:max-w-none'
-        >
-          <Image
-            src={currentProduct.image}
-            alt={currentProduct.name}
-            fill
-            style={{ objectFit: 'contain' }}
-            sizes='w-full'
-            className='transition-all duration-500 ease-in-out md:-translate-x-20'
-            priority
-          />
+        <div className='relative mx-auto flex aspect-[4/5] h-[185px] w-full items-end justify-center overflow-hidden md:order-1 md:h-[367px] md:max-w-none'>
+          {thumbnail && (
+            <Image
+              src={thumbnail}
+              alt={currentProduct.title}
+              fill
+              style={{ objectFit: 'contain' }}
+              sizes='100vw'
+              className='transition-all duration-500 ease-in-out md:-translate-x-20'
+              priority
+            />
+          )}
         </div>
       </div>
     </section>
