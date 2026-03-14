@@ -1,21 +1,18 @@
-// productSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { ProductsState } from './productTypes';
+import { ProductsState, Product } from './productTypes';
 import { getProducts } from './productService';
 
-// Async thunk
-export const fetchProducts = createAsyncThunk('products/fetchAll', async () => {
-  return await getProducts();
-});
+export const fetchProducts = createAsyncThunk<Product[]>(
+  'products/fetchAll',
+  async () => await getProducts()
+);
 
-// Initial state
 const initialState: ProductsState = {
   items: [],
   isLoading: false,
   error: null,
 };
 
-// Slice
 const productsSlice = createSlice({
   name: 'products',
   initialState,
@@ -26,12 +23,12 @@ const productsSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.items = action.payload;
+        state.isLoading = false;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.error.message || 'Failed to fetch products';
+        state.isLoading = false;
       });
   },
 });

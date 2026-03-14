@@ -1,4 +1,5 @@
 'use client';
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
@@ -9,7 +10,8 @@ import { setDetail } from '@/features/detail/detailSlice';
 import { DetailProduct } from '@/features/detail/detailTypes';
 
 import { useProduct } from '@/query/hooks/02_useProduct';
-import { highlightTextMap, Product } from '@/query/types/02_productType';
+import type { Product } from '@/query/types/02_productType';
+import { highlightTextMap } from '@/query/types/02_productType';
 
 export default function Hero() {
   const dispatch = useDispatch<AppDispatch>();
@@ -43,20 +45,41 @@ export default function Hero() {
   const highlight =
     highlightTextMap[currentProduct.category] ?? 'New Collection';
 
-  // ambil thumbnail langsung dari images array
   const thumbnail = currentProduct.images?.[0];
 
   const handleGetNow = () => {
     const detailProduct: DetailProduct = {
+      _id: currentProduct._id,
       id: currentProduct.id,
-      name: currentProduct.title,
+      title: currentProduct.title,
       description: currentProduct.description,
       category: currentProduct.category,
       price: currentProduct.price,
-      thumbnail: thumbnail,
-      images: currentProduct.images, // array string sesuai Mongo Atlas
-      brand: currentProduct.brand,
+      discountPercentage: currentProduct.discountPercentage,
+      rating: currentProduct.rating,
       stock: currentProduct.stock,
+      tags: currentProduct.tags,
+      brand: currentProduct.brand,
+      sku: currentProduct.sku,
+      weight: currentProduct.weight,
+      dimensions: currentProduct.dimensions,
+      warrantyInformation: currentProduct.warrantyInformation,
+      shippingInformation: currentProduct.shippingInformation,
+      availabilityStatus: currentProduct.availabilityStatus,
+
+      // 🔧 FIX ERROR DI SINI
+      reviews:
+        currentProduct.reviews?.map((r: any) => ({
+          user: r.user ?? 'Anonymous',
+          rating: r.rating,
+          comment: r.comment,
+        })) ?? [],
+
+      returnPolicy: currentProduct.returnPolicy,
+      minimumOrderQuantity: currentProduct.minimumOrderQuantity,
+      meta: currentProduct.meta,
+      images: currentProduct.images,
+      thumbnail: currentProduct.thumbnail,
     };
 
     dispatch(setDetail(detailProduct));

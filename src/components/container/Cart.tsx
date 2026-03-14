@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { increase, decrease, removeItem } from '@/features/cart/cartSlice';
 import Link from 'next/link';
+
 export default function Cart() {
   const cart = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ export default function Cart() {
   return (
     <main className='container mx-auto flex-grow px-4 py-8'>
       <h1 className='mb-6 text-3xl font-bold text-gray-800'>Cart</h1>
+
       <div className='flex flex-col gap-8 lg:flex-row'>
         {/* Cart Items */}
         <section className='flex-1 rounded-lg bg-white p-6 shadow-md'>
@@ -35,26 +37,39 @@ export default function Cart() {
                 key={item.id}
                 className='flex items-center justify-between border-b pb-4'
               >
+                {/* LEFT SIDE */}
                 <div className='flex items-center space-x-4'>
                   <input
                     type='checkbox'
                     className='form-checkbox h-5 w-5 rounded text-indigo-600'
                   />
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className='h-20 w-20 rounded-lg object-cover'
-                  />
-                  <div>
-                    <h3 className='font-semibold text-gray-800'>{item.name}</h3>
-                    <p className='text-sm text-gray-500'>{item.category}</p>
-                  </div>
+
+                  {/* LINK KE DETAIL */}
+                  <Link
+                    href={`/06_detail?id=${item.id}`}
+                    className='flex items-center space-x-4'
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className='h-20 w-20 rounded-lg object-cover'
+                    />
+
+                    <div>
+                      <h3 className='font-semibold text-gray-800 hover:underline'>
+                        {item.name}
+                      </h3>
+                      <p className='text-sm text-gray-500'>{item.category}</p>
+                    </div>
+                  </Link>
                 </div>
 
+                {/* RIGHT SIDE */}
                 <div className='flex items-center space-x-4'>
                   <p className='w-24 text-right font-bold text-gray-600'>
                     ${item.price.toFixed(2)}
                   </p>
+
                   <div className='flex items-center rounded-md border border-gray-300'>
                     <button
                       onClick={() => dispatch(decrease(item.id))}
@@ -62,9 +77,11 @@ export default function Cart() {
                     >
                       -
                     </button>
+
                     <span className='border-r border-l border-gray-300 px-3 py-1'>
                       {item.quantity}
                     </span>
+
                     <button
                       onClick={() => dispatch(increase(item.id))}
                       className='rounded-r-md px-3 py-1 text-gray-600 hover:bg-gray-100'
@@ -72,6 +89,7 @@ export default function Cart() {
                       +
                     </button>
                   </div>
+
                   <button
                     onClick={() => dispatch(removeItem(item.id))}
                     className='text-gray-400 hover:text-red-500'
@@ -101,12 +119,14 @@ export default function Cart() {
           <h2 className='mb-4 text-xl font-bold text-gray-600'>
             Total Shopping
           </h2>
+
           <div className='mb-6 flex items-center justify-between'>
             <span className='text-gray-700'>Total</span>
             <span className='text-xl font-bold text-gray-600'>
               ${totalPrice.toFixed(2)}
             </span>
           </div>
+
           <Link href='/10_checkout'>
             <button className='w-full rounded-lg bg-black py-3 font-semibold text-white transition duration-300 hover:bg-gray-800'>
               Checkout

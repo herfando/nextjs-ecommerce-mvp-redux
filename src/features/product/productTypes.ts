@@ -1,13 +1,10 @@
 export interface Product {
   id: number;
-  img: string;
   title: string;
-  price: string;
-  rating: string;
-  sold: string;
-  store: string;
-  category?: string;
-  description?: string;
+  price: string; // formatted string
+  rating: string; // formatted string
+  stock: number;
+  thumbnail: string;
 }
 
 export interface ApiProduct {
@@ -19,6 +16,10 @@ export interface ApiProduct {
   description: string;
   rating: number;
   stock: number;
+}
+
+export interface ApiProductsResponse {
+  products: ApiProduct[];
 }
 
 export interface ProductsState {
