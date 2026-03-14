@@ -1,4 +1,3 @@
-// src/app/buyer/open_store/OpenStore.tsx (REVISI LENGKAP)
 'use client';
 
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -18,12 +17,12 @@ import { useOpenStore } from '@/query/hooks/useOpenStore';
 
 export default function OpenStore() {
   // ✅ Ambil semua yang dibutuhkan dari hook
-  const { handleSubmit, onSubmit, isPending, ...form } = useOpenStore();
+  const form = useOpenStore(); // jangan di-destructuring handleSubmit/onSubmit di sini
 
   return (
     <div className='bg-muted/20 flex min-h-screen items-center justify-center p-20'>
       <Card className='bg-background w-full max-w-sm rounded-2xl border p-3 shadow-md'>
-        {/* Header (TETAP SAMA) */}
+        {/* Header */}
         <div className='flex flex-col items-start p-6'>
           <div className='mb-3 flex items-center gap-2'>
             <Image src='/Vector.png' alt='Logo' width={40} height={40} />
@@ -39,8 +38,7 @@ export default function OpenStore() {
 
         {/* Form */}
         <Form {...form}>
-          {/* ✅ Gunakan handleSubmit dan onSubmit dari hook */}
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(form.onSubmit)}>
             <CardContent className='space-y-6'>
               {/* STORE PROFILE */}
               <div>
@@ -56,7 +54,7 @@ export default function OpenStore() {
                         <FormControl>
                           <Input placeholder='Store Name' {...field} />
                         </FormControl>
-                        <FormMessage className='text-red-500' />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -68,7 +66,7 @@ export default function OpenStore() {
                         <FormControl>
                           <Input placeholder='Store Domain' {...field} />
                         </FormControl>
-                        <FormMessage className='text-red-500' />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -89,7 +87,7 @@ export default function OpenStore() {
                         <FormControl>
                           <Input placeholder='City' {...field} />
                         </FormControl>
-                        <FormMessage className='text-red-500' />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -101,7 +99,7 @@ export default function OpenStore() {
                         <FormControl>
                           <Input placeholder='Postal Code' {...field} />
                         </FormControl>
-                        <FormMessage className='text-red-500' />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -113,7 +111,7 @@ export default function OpenStore() {
                         <FormControl>
                           <Textarea placeholder='Detail Address' {...field} />
                         </FormControl>
-                        <FormMessage className='text-red-500' />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -124,12 +122,10 @@ export default function OpenStore() {
             <CardFooter className='flex flex-col gap-2'>
               <Button
                 type='submit'
-                // ✅ Gunakan isPending untuk loading state
-                disabled={isPending}
+                disabled={form.isPending}
                 className='mt-2 h-11 w-full rounded-lg bg-black text-base font-medium text-white hover:bg-gray-800'
               >
-                {/* ✅ Tampilkan loading state */}
-                {isPending ? 'Submitting...' : 'Submit'}
+                {form.isPending ? 'Submitting...' : 'Submit'}
               </Button>
               <Link
                 href='/05_home/afterstore'
