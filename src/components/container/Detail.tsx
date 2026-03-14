@@ -1,92 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '@/app/store';
-import { fetchProductDetail } from '@/features/detail/detailSlice';
-import { addToCart } from '@/features/cart/cartSlice';
-import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import type { DetailProduct } from '@/features/detail/detailTypes';
-import type { ApiProduct } from '@/features/product/productTypes';
 
-type ProductsResponse = {
-  products: ApiProduct[];
-};
+import { useProduct } from '@/query/hooks/02_useProduct';
+import { addToCart } from '@/features/cart/cartSlice';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/app/store';
 
 export default function Detail() {
   const dispatch = useDispatch<AppDispatch>();
-  const { item, isLoading, error } = useSelector(
-    (state: RootState) => state.detail
-  );
-
   const searchParams = useSearchParams();
+
   const idParam = searchParams.get('id');
   const id = idParam ? Number(idParam) : null;
 
+  const { data: products = [], isLoading } = useProduct();
+
+  const product = products.find((p) => p.id === id);
+
   const [quantity, setQuantity] = useState(1);
-  const [related, setRelated] = useState<DetailProduct[]>([]);
   const [activeTab, setActiveTab] = useState<'description' | 'specification'>(
     'description'
   );
-
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  // ----------------------------
-  // Fetch detail product
-  // ----------------------------
-  useEffect(() => {
-    if (id !== null) {
-      dispatch(fetchProductDetail(id));
-    }
-  }, [dispatch, id]);
-
-  // ----------------------------
-  // Fetch related products
-  // ----------------------------
-  useEffect(() => {
-    if (item && item.category) {
-      fetch(
-        `${API_BASE}/products/category/${encodeURIComponent(item.category)}`
-      )
-        .then((res) => res.json() as Promise<ProductsResponse>)
-        .then((json) => {
-          const prods = json.products
-            .filter((p) => p.id !== item.id)
-            .map((p) => ({
-              _id: '', // default
-              id: p.id,
-              title: p.title,
-              price: p.price,
-              description: p.description || '',
-              category: p.category || '',
-              brand: 'Unknown', // default karena API gak ada
-              stock: p.stock || 0,
-              thumbnail: p.thumbnail,
-              images: [p.thumbnail],
-              rating: p.rating || 0,
-              discountPercentage: 0,
-              tags: [],
-              sku: '',
-              weight: 0,
-              dimensions: { width: 0, height: 0, depth: 0 },
-              warrantyInformation: '',
-              shippingInformation: '',
-              availabilityStatus: 'In Stock',
-              reviews: [],
-              returnPolicy: '',
-              minimumOrderQuantity: 1,
-              meta: { createdAt: '', updatedAt: '', barcode: '', qrCode: '' },
-            }));
-          setRelated(prods.slice(0, 4));
-        })
-        .catch((err) =>
-          console.error('Failed to fetch related products:', err)
-        );
-    }
-  }, [item, API_BASE]);
 
   if (isLoading)
     return (
@@ -95,48 +34,17 @@ export default function Detail() {
       </div>
     );
 
-  if (error)
+  if (!product)
     return (
       <div className='flex h-[80vh] items-center justify-center text-red-500'>
-        {error}
+        Product not found
       </div>
     );
 
-  // ----------------------------
-  // Pastikan data SELALU DetailProduct
-  // ----------------------------
-  const data: DetailProduct = item ?? {
-    _id: '',
-    id: 0,
-    title: 'Sneakers Court Minimalis',
-    price: 275000,
-    description:
-      'Sepatu sneakers bergaya minimalis dengan kombinasi warna ivory dan beige yang elegan.',
-    category: 'Sneakers',
-    brand: 'Minimal Brand',
-    stock: 10,
-    thumbnail: '/product1.png',
-    images: [
-      '/product1.png',
-      '/Thumbnail Image-1.png',
-      '/Thumbnail Image-2.png',
-      '/Thumbnail Image-1.png',
-      '/Thumbnail Image-3.png',
-    ],
-    discountPercentage: 0,
-    rating: 5,
-    tags: [],
-    sku: '',
-    weight: 0,
-    dimensions: { width: 0, height: 0, depth: 0 },
-    warrantyInformation: '',
-    shippingInformation: '',
-    availabilityStatus: 'In Stock',
-    reviews: [],
-    returnPolicy: '',
-    minimumOrderQuantity: 1,
-    meta: { createdAt: '', updatedAt: '', barcode: '', qrCode: '' },
-  };
+  // related products dari cache
+  const related = products
+    .filter((p) => p.category === product.category && p.id !== product.id)
+    .slice(0, 4);
 
   const handleIncrease = () => setQuantity((prev) => prev + 1);
   const handleDecrease = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
@@ -144,11 +52,11 @@ export default function Detail() {
   const handleAddToCart = () => {
     dispatch(
       addToCart({
-        id: data.id,
-        name: data.title,
-        price: data.price,
-        image: data.thumbnail,
-        category: data.category,
+        id: product.id,
+        name: product.title,
+        price: product.price,
+        image: product.thumbnail,
+        category: product.category,
         quantity,
       })
     );
@@ -160,22 +68,22 @@ export default function Detail() {
         <nav className='mb-6 text-sm text-gray-500'>
           Home <span className='mx-2'>›</span> Detail{' '}
           <span className='mx-2'>›</span>
-          <span className='text-black'>{data.title}</span>
+          <span className='text-black'>{product.title}</span>
         </nav>
 
         <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
-          {/* Left: Images */}
+          {/* Images */}
           <div>
             <Image
-              src={data.thumbnail}
-              alt={data.title}
+              src={product.thumbnail}
+              alt={product.title}
               width={500}
               height={400}
               className='aspect-[4/3] w-full rounded-lg border border-gray-300 object-cover'
             />
 
             <div className='mt-4 flex justify-between gap-1'>
-              {data.images.slice(0, 5).map((img, i) => (
+              {product.images.slice(0, 5).map((img, i) => (
                 <Image
                   key={i}
                   src={img}
@@ -188,11 +96,12 @@ export default function Detail() {
             </div>
           </div>
 
-          {/* Right: Detail */}
+          {/* Detail */}
           <div className='col-span-2'>
-            <h1 className='text-2xl font-semibold'>{data.title}</h1>
+            <h1 className='text-2xl font-semibold'>{product.title}</h1>
+
             <p className='mt-2 text-2xl font-bold'>
-              {Number(data.price).toLocaleString('en-US', {
+              {Number(product.price).toLocaleString('en-US', {
                 style: 'currency',
                 currency: 'USD',
               })}
@@ -210,6 +119,7 @@ export default function Detail() {
               >
                 Description
               </button>
+
               <button
                 className={`pb-2 font-semibold ${
                   activeTab === 'specification'
@@ -224,25 +134,27 @@ export default function Detail() {
 
             <div className='mt-4 space-y-4 leading-relaxed text-gray-700'>
               {activeTab === 'description' ? (
-                <p className='text-sm'>{data.description}</p>
+                <p className='text-sm'>{product.description}</p>
               ) : (
                 <ul className='list-disc space-y-2 pl-5 text-sm'>
                   <li>
-                    <span className='font-medium'>Brand:</span> {data.brand}
+                    <span className='font-medium'>Brand:</span> {product.brand}
                   </li>
                   <li>
                     <span className='font-medium'>Category:</span>{' '}
-                    {data.category}
+                    {product.category}
                   </li>
                   <li>
-                    <span className='font-medium'>Stock:</span> {data.stock}
+                    <span className='font-medium'>Stock:</span> {product.stock}
                   </li>
                 </ul>
               )}
             </div>
 
+            {/* Quantity */}
             <div className='mt-6'>
               <p className='mb-2 text-sm text-gray-500'>Quantity</p>
+
               <div className='inline-flex items-center rounded-lg border'>
                 <button
                   onClick={handleDecrease}
@@ -250,7 +162,9 @@ export default function Detail() {
                 >
                   −
                 </button>
+
                 <span className='border-x px-4 py-2'>{quantity}</span>
+
                 <button
                   onClick={handleIncrease}
                   className='px-3 py-2 select-none'
@@ -272,12 +186,13 @@ export default function Detail() {
 
       <div className='border-t border-gray-300' />
 
-      {/* Related Products */}
+      {/* Related */}
       <div className='mx-auto max-w-7xl px-6 py-10'>
         <h2 className='mb-6 text-2xl font-semibold'>Related Product</h2>
+
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4'>
           {related.map((prod) => (
-            <Link key={prod.id} href={`/detail?id=${prod.id}`}>
+            <Link key={prod.id} href={`/06_detail?id=${prod.id}`}>
               <div className='cursor-pointer rounded-lg bg-white p-4 shadow'>
                 <div className='mb-4 flex h-60 w-full items-center justify-center rounded-md bg-gray-100'>
                   <img
@@ -286,7 +201,9 @@ export default function Detail() {
                     className='h-full w-full object-cover'
                   />
                 </div>
+
                 <h3 className='mb-1 text-sm font-medium'>{prod.title}</h3>
+
                 <p className='mb-1 text-sm font-semibold text-gray-800'>
                   {Number(prod.price).toLocaleString('en-US', {
                     style: 'currency',

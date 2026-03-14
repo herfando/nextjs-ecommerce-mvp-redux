@@ -1,34 +1,28 @@
 'use client';
 
 import Image from 'next/image';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '@/app/store';
-import { fetchProducts } from '@/features/product/productSlice';
-import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { setDetail } from '@/features/detail/detailSlice';
+import { useProduct } from '@/query/hooks/02_useProduct';
 
 export default function Catalog() {
-  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { items: products, isLoading } = useSelector(
-    (state: RootState) => state.products
-  );
+
+  // TanStack Query
+  const { data: products = [], isLoading } = useProduct();
+
+  // Redux hanya untuk search query
   const query = useSelector((state: RootState) => state.search.query);
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]); // ⬅️ untuk filter
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (!products.length) {
-      dispatch(fetchProducts());
-    }
-  }, [dispatch, products.length]);
-
-  // Ambil semua kategori unik dari products
+  // ambil kategori unik
   const categories = Array.from(new Set(products.map((p) => p.category)));
-  categories.unshift('All'); // supaya ada pilihan All
+  categories.unshift('All');
 
-  // Handle checkbox
+  // handle checkbox
   const handleCategoryChange = (cat: string, checked: boolean) => {
     if (cat === 'All') {
       setSelectedCategories([]);
@@ -50,7 +44,7 @@ export default function Catalog() {
     )
     .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 
-  if (isLoading || !products.length) {
+  if (isLoading) {
     return (
       <div className='flex min-h-screen items-center justify-center'>
         <p className='text-gray-600'>Loading products...</p>
@@ -63,10 +57,12 @@ export default function Catalog() {
       <h1 className='mb-6 text-3xl font-bold'>Catalog</h1>
 
       <div className='grid grid-cols-1 gap-8 lg:grid-cols-4'>
+        {/* FILTER */}
         <aside className='col-span-1 hidden divide-y divide-gray-300 rounded-xl border border-gray-300 bg-white py-4 lg:block'>
           <div className='flex flex-col gap-2.5 px-4 py-2.5'>
             <h2 className='text-lg font-bold'>FILTER</h2>
             <h3 className='text-md font-semibold'>Categories</h3>
+
             <ul className='mt-3 space-y-2'>
               {categories.map((cat, i) => (
                 <li key={i}>
@@ -91,30 +87,32 @@ export default function Catalog() {
           </div>
         </aside>
 
+        {/* PRODUCT GRID */}
         <section className='col-span-3 space-y-6'>
           <div className='grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4'>
             {filteredProducts.map((product) => (
               <article
                 key={product.id}
-                onClick={() => {
-                  router.push(`/06_detail?id=${product.id}`);
-                }}
+                onClick={() => router.push(`/06_detail?id=${product.id}`)}
                 className='cursor-pointer rounded-xl bg-white shadow-sm transition hover:shadow-md'
               >
                 <div className='relative h-72 w-full'>
                   <Image
-                    src={product.img}
+                    src={product.thumbnail}
                     alt={product.title}
                     fill
                     style={{ objectFit: 'cover' }}
                     className='rounded-t-xl'
                   />
                 </div>
+
                 <div className='px-2 py-2'>
                   <h4 className='line-clamp-1 text-sm'>{product.title}</h4>
+
                   <data className='block text-sm font-bold'>
-                    {product.price}
+                    Rp {product.price.toLocaleString()}
                   </data>
+
                   <div className='flex items-center gap-1 text-sm'>
                     <Image
                       src='/rating.png'
