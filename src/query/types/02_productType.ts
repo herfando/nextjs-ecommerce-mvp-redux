@@ -54,11 +54,18 @@ export interface Product {
 
   meta: Meta;
 
-  // fix: images sekarang array string sesuai Mongo Atlas
-  images: string[];
+  // ======================
+  // IMAGE DATA (Atlas)
+  // ======================
+
+  thumbnail: string; // gambar utama
+  images: string[]; // gallery produk
 }
 
-// mapping highlight hero
+// ======================
+// highlight hero mapping
+// ======================
+
 export const highlightTextMap: Record<string, string> = {
   beauty: 'Beauty Essentials',
   fragrances: 'Feel Fresh Everyday',

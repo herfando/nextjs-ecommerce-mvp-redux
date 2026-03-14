@@ -9,14 +9,11 @@ import { addToCart } from '@/features/cart/cartSlice';
 import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Product } from '@/query/types';
-import { DetailProduct } from '@/features/detail/detailTypes';
+import type { DetailProduct } from '@/features/detail/detailTypes';
+import type { ApiProduct } from '@/features/product/productTypes';
 
-// ----------------------------
-// API response type
-// ----------------------------
 type ProductsResponse = {
-  products: Product[];
+  products: ApiProduct[];
 };
 
 export default function Detail() {
@@ -30,7 +27,7 @@ export default function Detail() {
   const id = idParam ? Number(idParam) : null;
 
   const [quantity, setQuantity] = useState(1);
-  const [related, setRelated] = useState<Product[]>([]);
+  const [related, setRelated] = useState<DetailProduct[]>([]);
   const [activeTab, setActiveTab] = useState<'description' | 'specification'>(
     'description'
   );
@@ -56,7 +53,33 @@ export default function Detail() {
       )
         .then((res) => res.json() as Promise<ProductsResponse>)
         .then((json) => {
-          const prods = json.products.filter((p) => p.id !== item.id);
+          const prods = json.products
+            .filter((p) => p.id !== item.id)
+            .map((p) => ({
+              _id: '', // default
+              id: p.id,
+              title: p.title,
+              price: p.price,
+              description: p.description || '',
+              category: p.category || '',
+              brand: 'Unknown', // default karena API gak ada
+              stock: p.stock || 0,
+              thumbnail: p.thumbnail,
+              images: [p.thumbnail],
+              rating: p.rating || 0,
+              discountPercentage: 0,
+              tags: [],
+              sku: '',
+              weight: 0,
+              dimensions: { width: 0, height: 0, depth: 0 },
+              warrantyInformation: '',
+              shippingInformation: '',
+              availabilityStatus: 'In Stock',
+              reviews: [],
+              returnPolicy: '',
+              minimumOrderQuantity: 1,
+              meta: { createdAt: '', updatedAt: '', barcode: '', qrCode: '' },
+            }));
           setRelated(prods.slice(0, 4));
         })
         .catch((err) =>
@@ -83,8 +106,9 @@ export default function Detail() {
   // Pastikan data SELALU DetailProduct
   // ----------------------------
   const data: DetailProduct = item ?? {
+    _id: '',
     id: 0,
-    name: 'Sneakers Court Minimalis',
+    title: 'Sneakers Court Minimalis',
     price: 275000,
     description:
       'Sepatu sneakers bergaya minimalis dengan kombinasi warna ivory dan beige yang elegan.',
@@ -99,6 +123,19 @@ export default function Detail() {
       '/Thumbnail Image-1.png',
       '/Thumbnail Image-3.png',
     ],
+    discountPercentage: 0,
+    rating: 5,
+    tags: [],
+    sku: '',
+    weight: 0,
+    dimensions: { width: 0, height: 0, depth: 0 },
+    warrantyInformation: '',
+    shippingInformation: '',
+    availabilityStatus: 'In Stock',
+    reviews: [],
+    returnPolicy: '',
+    minimumOrderQuantity: 1,
+    meta: { createdAt: '', updatedAt: '', barcode: '', qrCode: '' },
   };
 
   const handleIncrease = () => setQuantity((prev) => prev + 1);
@@ -108,7 +145,7 @@ export default function Detail() {
     dispatch(
       addToCart({
         id: data.id,
-        name: data.name,
+        name: data.title,
         price: data.price,
         image: data.thumbnail,
         category: data.category,
@@ -123,7 +160,7 @@ export default function Detail() {
         <nav className='mb-6 text-sm text-gray-500'>
           Home <span className='mx-2'>›</span> Detail{' '}
           <span className='mx-2'>›</span>
-          <span className='text-black'>{data.name}</span>
+          <span className='text-black'>{data.title}</span>
         </nav>
 
         <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
@@ -131,7 +168,7 @@ export default function Detail() {
           <div>
             <Image
               src={data.thumbnail}
-              alt={data.name}
+              alt={data.title}
               width={500}
               height={400}
               className='aspect-[4/3] w-full rounded-lg border border-gray-300 object-cover'
@@ -153,9 +190,9 @@ export default function Detail() {
 
           {/* Right: Detail */}
           <div className='col-span-2'>
-            <h1 className='text-2xl font-semibold'>{data.name}</h1>
+            <h1 className='text-2xl font-semibold'>{data.title}</h1>
             <p className='mt-2 text-2xl font-bold'>
-              {data.price.toLocaleString('en-US', {
+              {Number(data.price).toLocaleString('en-US', {
                 style: 'currency',
                 currency: 'USD',
               })}
@@ -244,14 +281,14 @@ export default function Detail() {
               <div className='cursor-pointer rounded-lg bg-white p-4 shadow'>
                 <div className='mb-4 flex h-60 w-full items-center justify-center rounded-md bg-gray-100'>
                   <img
-                    src={prod.image}
-                    alt={prod.name}
+                    src={prod.thumbnail}
+                    alt={prod.title}
                     className='h-full w-full object-cover'
                   />
                 </div>
-                <h3 className='mb-1 text-sm font-medium'>{prod.name}</h3>
+                <h3 className='mb-1 text-sm font-medium'>{prod.title}</h3>
                 <p className='mb-1 text-sm font-semibold text-gray-800'>
-                  {prod.price.toLocaleString('en-US', {
+                  {Number(prod.price).toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
                   })}
